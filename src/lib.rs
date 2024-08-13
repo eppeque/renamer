@@ -3,6 +3,7 @@ use std::{error::Error, fs, io};
 use regex::Regex;
 
 const FMT_RX: &str = r"^[^\s{}]*\{(id|s)\}[^\s{}]*$";
+const VERSION: &str = "1.0.1";
 
 pub struct Config {
     fmt: String,
@@ -45,6 +46,40 @@ impl Config {
             list_path,
         })
     }
+}
+
+pub fn handle_special_commands(args: impl Iterator<Item = String>) -> Option<Vec<String>> {
+    let mut args_vec: Vec<String> = args.collect();
+    let first = args_vec.remove(0);
+
+    if args_vec.is_empty() {
+        println!("Renamer v{VERSION}");
+        println!("Renamer is a CLI tool allowing you to rename a lot of files easily. You can do so in 2 different ways:");
+        println!("1. Rename with an id from 0 to the last file in the directory.");
+        println!(
+            "2. Rename with an input file containing a list of data to inject in the file name."
+        );
+        println!("Use the 'help' command for more information.");
+
+        return None;
+    }
+
+    if args_vec.len() == 1 && &args_vec[0] == "help" {
+        println!("Usage:");
+        println!("$ renamer <FILENAME_FORMAT> [INPUT_FILE_PATH]");
+        println!("1. FILENAME_FORMAT: This is the format used to build file names.");
+        println!("To use the id, type {{id}} (Example: my_file_{{id}}.txt).");
+        println!("To use input data, type {{s}} (Example: file_owned_by_{{s}}.txt).");
+        println!(
+            "2. INPUT_FILE_PATH: This argument is only necessary when using {{s}} format type."
+        );
+        println!("It indicates the path leading to the input file containing a list with a line for each file.");
+
+        return None;
+    }
+
+    args_vec.insert(0, first);
+    Some(args_vec)
 }
 
 /// # Errors
