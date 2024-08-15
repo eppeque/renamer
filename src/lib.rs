@@ -101,7 +101,7 @@ fn rename_with_index(fmt: &str) -> Result<(), io::Error> {
     file_names.sort();
 
     for (i, current_name) in file_names.into_iter().enumerate() {
-        let new_name = fmt.replace("{id}", &i.to_string());
+        let new_name = fmt.replace("{id}", &(i + 1).to_string());
         fs::rename(current_name, new_name)?;
     }
 
